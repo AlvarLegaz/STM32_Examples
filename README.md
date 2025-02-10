@@ -1,4 +1,4 @@
-# STM32F103T6_Examples
+# EJEMPLOS BÁSICOS STM32F103T6
 
 ## Blink_Led_Digital_Analog_Input
 Controla el parpadeo de un led (PIN PB12) de dos formas:
