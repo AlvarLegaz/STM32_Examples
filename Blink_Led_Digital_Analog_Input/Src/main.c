@@ -1,4 +1,4 @@
-
+p
 #include "main.h"
 
 void SystemClock_Config(void);
@@ -33,9 +33,9 @@ int main(void)
 		HAL_Delay(100);
 	 }
 	 else{
-		double tiempo = (TIEMPO_MAX - TIEMPO_MIN)*(value_adc/4096.0) + TIEMPO_MIN;
+		double tiempo_espera = (TIEMPO_MAX - TIEMPO_MIN)*(value_adc/4096.0) + TIEMPO_MIN;
 		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
-		HAL_Delay(tiempo);
+		HAL_Delay(tiempo_espera);
 	 }
   }
 }
