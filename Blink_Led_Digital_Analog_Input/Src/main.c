@@ -16,8 +16,6 @@ int main(void)
   MX_GPIO_Init();
   MX_ADC1_Init();
 
-  HAL_ADC_Start(&hadc1);
-
   uint32_t value_adc  = 0;
 
   uint16_t TIEMPO_MAX = 1000;
@@ -25,26 +23,21 @@ int main(void)
 
   while (1)
   {
-
-	 HAL_ADC_Start(&hadc1);
-	 // Poll ADC1 Peripheral & TimeOut = 100mSec
-	 HAL_ADC_PollForConversion(&hadc1, 100);
-	 // Read The ADC Conversion Result
-	 value_adc = HAL_ADC_GetValue(&hadc1);
+	 HAL_ADC_Start(&hadc1); 
+	 HAL_ADC_PollForConversion(&hadc1, 100); // Poll ADC1 Peripheral & TimeOut = 100mSec
+	 value_adc = HAL_ADC_GetValue(&hadc1); // Read The ADC Conversion Result
 	 HAL_ADC_Stop(&hadc1);
 
 	 if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_6) == GPIO_PIN_SET){
-		 HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
-	     HAL_Delay(100);
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
+		HAL_Delay(100);
 	 }
 	 else{
-		 double tiempo = (TIEMPO_MAX - TIEMPO_MIN)*(value_adc/4096.0) + TIEMPO_MIN;
-
-		 HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
-		 HAL_Delay(tiempo);
+		double tiempo = (TIEMPO_MAX - TIEMPO_MIN)*(value_adc/4096.0) + TIEMPO_MIN;
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_12);
+		HAL_Delay(tiempo);
 	 }
   }
-
 }
 
 
