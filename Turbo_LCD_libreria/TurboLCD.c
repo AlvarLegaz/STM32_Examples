@@ -3,6 +3,15 @@
 extern I2C_HandleTypeDef hi2c1;  // change your handler here accordingly
 #define SLAVE_ADDRESS_LCD 0x27 // change this according to ur setup
 
+#define PIN_DISPLAY_RW GPIO_PIN_6 //PA6 d12
+#define PIN_DISPLAY_RS GPIO_PIN_7 //PA7 d11
+#define PIN_DISPLAY_EN GPIO_PIN_9 //PA9 d8
+
+#define PIN_DISPLAY_D4 GPIO_PIN_10	//PIN DISPLAY 4 -> PB10 D6
+#define PIN_DISPLAY_D5 GPIO_PIN_4	//PIN DISPLAY 5 -> PB4 D5
+#define PIN_DISPLAY_D6 GPIO_PIN_5	//PIN DISPLAY 6 -> PB5 D4
+#define PIN_DISPLAY_D7 GPIO_PIN_3	//PIN DISPLAY 7 -> PB3 D3
+
 #define I2C_TX_TIMEOUT 100
 
 #define CMD_MODE 0
@@ -12,38 +21,28 @@ static char BACKLIGHT = 1;
 
 void LCD_Init(void)
 {
-		// 4 bit initialisation
-		HAL_Delay(50);  // PowerOn delay >15ms
+    HAL_Delay(50); // Esperar al encendido del LCD (>15ms)
 
-		// 3 Times init in 8 bit mode (datasheet requirement)
-		LCD_CMD (0x03);
-		HAL_Delay(10);  // wait for >4.1ms
-		LCD_CMD (0x03);
-		HAL_Delay(1);  // wait for >100us
-		LCD_CMD (0x03);
-		HAL_Delay(10);
+    // Forzar modo 8 bits tres veces
+    LCD_CMD(0x03);
+    HAL_Delay(5);
+    LCD_CMD(0x03);
+    HAL_Delay(5);
+    LCD_CMD(0x03);
+    HAL_Delay(1);
 
-		// 4 bit mode
-		LCD_CMD (0x02);  // 4bit mode
-		HAL_Delay(10);
+    // Pasar a modo 4 bits
+    LCD_CMD(0x02);
+    HAL_Delay(1);
 
-	  // dislay initialisation
-		LCD_CMD (0x28); // Function set --> DL=0 (4 bit mode), N = 1 (2 line display) F = 0 (5x8 characters)
-		HAL_Delay(4);
-		LCD_CMD (0x28); // Function set --> DL=0 (4 bit mode), N = 1 (2 line display) F = 0 (5x8 characters)
-		HAL_Delay(1);
-		LCD_CMD (0x28); // Function set --> DL=0 (4 bit mode), N = 1 (2 line display) F = 0 (5x8 characters)
-		HAL_Delay(1);
-		LCD_CMD (0x28); // Function set --> DL=0 (4 bit mode), N = 1 (2 line display) F = 0 (5x8 characters)
-		HAL_Delay(1);
-	//	LCD_CMD (0x08); //Display on/off control --> D=0,C=0, B=0  ---> display off
-	//	HAL_Delay(2);
-		//LCD_CMD (0x06); //Entry mode set --> I/D = 1 (increment cursor) & S = 0 (no shift)
-		//HAL_Delay(1);
-		//LCD_CMD (0x0C); //Display on/off control --> D = 1, C and B = 0. (Cursor and blink, last two bits)
-		//HAL_Delay(1);
-		LCD_CMD (0x01);  // clear display
-		HAL_Delay(3);
+    // Configurar LCD
+    LCD_CMD(0x28); // 4-bit, 2 líneas, 5x8 font
+    LCD_CMD(0x08); // Display OFF, cursor OFF
+    LCD_CMD(0x01); // Clear display
+    HAL_Delay(2);
+    LCD_CMD(0x06); // Entry mode: incrementa cursor
+    LCD_CMD(0x0C); // Display ON, cursor OFF, blink OFF
+    //LCD_CMD(0x0E);  // Display ON + cursor visible
 }
 
 void LCD_Clear (void)
@@ -90,13 +89,19 @@ void LCD_Write_String(char* str)
 void LCD_CMD(char cmd)
 {
 	// If I2C
-	LCD_Write_I2C(CMD_MODE, cmd, BACKLIGHT);
+	//LCD_Write_I2C(CMD_MODE, cmd, BACKLIGHT);
+
+	// IF PARALLEL
+	LCD_Write_PARALLEL(CMD_MODE, cmd);
 }
 
 void LCD_DATA(char data)
 {
 	// IF I2C
-	LCD_Write_I2C(CHAR_MODE, data, BACKLIGHT);
+	//LCD_Write_I2C(CHAR_MODE, data, BACKLIGHT);
+
+	// IF PARALLEL
+	LCD_Write_PARALLEL(CHAR_MODE, data);
 }
 
 
@@ -156,4 +161,34 @@ else
 }
 	// Address is 7 bits and HAL uses 8 bit format with lsb free for write/read operation
 	HAL_I2C_Master_Transmit(&hi2c1, (SLAVE_ADDRESS_LCD<<1), buff, buff_size, I2C_TX_TIMEOUT);
+}
+
+
+void LCD_Write_PARALLEL(char mode, char data)
+{
+    // Configura RS/RW
+    HAL_GPIO_WritePin(GPIOA, PIN_DISPLAY_RS, (mode == CHAR_MODE) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOA, PIN_DISPLAY_RW, GPIO_PIN_RESET);
+
+    // Nibble alto
+    HAL_GPIO_WritePin(GPIOB, PIN_DISPLAY_D7, (data >> 7) & 0x01);
+    HAL_GPIO_WritePin(GPIOB, PIN_DISPLAY_D6, (data >> 6) & 0x01);
+    HAL_GPIO_WritePin(GPIOB, PIN_DISPLAY_D5, (data >> 5) & 0x01);
+    HAL_GPIO_WritePin(GPIOB, PIN_DISPLAY_D4, (data >> 4) & 0x01);
+    LCD_EnablePulse();
+
+    // Nibble bajo
+    HAL_GPIO_WritePin(GPIOB, PIN_DISPLAY_D7, (data >> 3) & 0x01);
+    HAL_GPIO_WritePin(GPIOB, PIN_DISPLAY_D6, (data >> 2) & 0x01);
+    HAL_GPIO_WritePin(GPIOB, PIN_DISPLAY_D5, (data >> 1) & 0x01);
+    HAL_GPIO_WritePin(GPIOB, PIN_DISPLAY_D4, (data >> 0) & 0x01);
+    LCD_EnablePulse();
+}
+
+void LCD_EnablePulse(void)
+{
+    HAL_GPIO_WritePin(GPIOA, PIN_DISPLAY_EN, GPIO_PIN_SET);
+    for(volatile int i = 0; i < 300; i++); // ≈ 1 µs
+    HAL_GPIO_WritePin(GPIOA, PIN_DISPLAY_EN, GPIO_PIN_RESET);
+    for(volatile int i = 0; i < 300; i++);
 }
