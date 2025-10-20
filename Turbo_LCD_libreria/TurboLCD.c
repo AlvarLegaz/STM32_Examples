@@ -53,22 +53,17 @@ void LCD_Clear (void)
 
 void LCD_Set_Cursor(unsigned char row, unsigned char col)
 {
-    switch (row)
-    {
-        case 0:
-            col |= 0x80;
-            break;
-        case 1:
-            col |= 0xC0;
-            break;
-		case 2:
-            col += 0x94;
-            break;
-		case 3:
-            col += 0xD4;
-            break;
-    }
-    LCD_CMD (col);
+    // Direcciones base de cada línea en DDRAM
+	static const uint8_t row_offsets[] = {0x00, 0x40, 0x14, 0x54};
+
+    // Limitar filas y columnas a rangos válidos
+    if (row > 3) row = 3;
+    if (col > 19) col = 19;  // Ajusta si usas 16x2, 20x4, etc.
+
+    // Dirección final = base + columna
+    uint8_t addr = 0x80 | (row_offsets[row] + col);
+
+    LCD_CMD(addr);
 }
 
 void LCD_Backlight(char state)
@@ -192,3 +187,4 @@ void LCD_EnablePulse(void)
     HAL_GPIO_WritePin(GPIOA, PIN_DISPLAY_EN, GPIO_PIN_RESET);
     for(volatile int i = 0; i < 300; i++);
 }
+
