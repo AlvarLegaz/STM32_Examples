@@ -1,5 +1,10 @@
 # EJEMPLOS BÁSICOS STM32F
 
+## Placas desarrollo STM32
+<img width="531" height="455" alt="image" src="https://github.com/user-attachments/assets/ece3ee35-3f99-48de-aa26-3943d3013089" />
+
+<img width="505" height="439" alt="image" src="https://github.com/user-attachments/assets/181c78a9-6bd8-437d-938c-412a261b2a10" />
+
 ## Blink_Led_Digital_Analog_Input
 Controla la frecuencia del parpadeo de un led (PIN PB12) de dos formas:
 1.  Poniendo en alto el PIN PA6. Esto hace que parpadé con un periodo de 200 mseg.
