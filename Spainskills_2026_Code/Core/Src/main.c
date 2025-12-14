@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 
 #include "drivers/TurboLCD.h"
+#include "drivers/hc_sr04.h"
 
 /* USER CODE END Includes */
 
@@ -96,6 +97,7 @@ int main(void)
   MX_I2C1_Init();
   MX_ADC1_Init();
   MX_TIM2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
   LCD_Init();
@@ -103,9 +105,8 @@ int main(void)
   LCD_Set_Cursor(0,0);
   LCD_Write_String("Spainskills 2026");
 
-  // Iniciar timer con interrupción de OC en Channel 1
-  HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_1);
-
+  extern TIM_HandleTypeDef htim3;
+  HC_SR04_Init(&htim3, TIM_CHANNEL_4);
 
   /* USER CODE END 2 */
 
@@ -125,6 +126,7 @@ int main(void)
 
   while (1)
   {
+
 	 // Mostrar hora
 	 uint32_t now = HAL_GetTick();   // tiempo actual en ms
 
@@ -139,7 +141,10 @@ int main(void)
 		 LCD_Write_String(time_str);
 		 HAL_Delay(1000);
 		 ticks_seg ++;
+
+		 last_update = now;
 	 }
+
 
 	 //Mostrar ADC y convertir voltios
 
@@ -155,10 +160,20 @@ int main(void)
 	 v_adc = 3.3 * adc_value / 4095.0;
 	 uint8_t entero = (int)v_adc;                  // parte entera
 	 uint8_t decimales = (int)((v_adc - entero) * 100);  // 2 decimales
-	 snprintf(v_value_str, sizeof(v_value_str), "V=%d.%02d", entero, decimales);
 
-	 LCD_Set_Cursor(1,9);
-	 LCD_Write_String(v_value_str);
+	 // Medir distancia
+
+	 uint32_t distancia = HC_SR04_GetDistance_cm();
+
+	 if(distancia>0){
+		 memset(v_value_str,0,sizeof(v_value_str));
+		 snprintf(v_value_str, sizeof(v_value_str), "D=%lu", distancia);
+
+		 LCD_Set_Cursor(1,9);
+		 LCD_Write_String("      ");   // Borro por si habia datos más largos
+		 LCD_Set_Cursor(1,9);
+		 LCD_Write_String(v_value_str);
+	 }
 
     /* USER CODE END WHILE */
 
@@ -214,18 +229,6 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-// CALLBACK GLOBAL PARA TIMER CON OC
-void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
-{
-    if(htim->Instance == TIM2 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
-    {
-        // Toggle del LED
-        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-        // Si quieres repetir cada 0.25 s, reprograma
-        __HAL_TIM_SET_COUNTER(&htim2, 0);
-
-    }
-}
 
 /* USER CODE END 4 */
 
