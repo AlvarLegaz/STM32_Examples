@@ -29,6 +29,9 @@
 
 #include "drivers/TurboLCD.h"
 #include "drivers/hc_sr04.h"
+#include "drivers/fonts.h"
+#include "drivers/ssd1306.h"
+#include "drivers/bitmap.h"
 
 /* USER CODE END Includes */
 
@@ -100,10 +103,50 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
+  //---- Display LCD - I2C ---//
+  /*
   LCD_Init();
   LCD_Clear();
   LCD_Set_Cursor(0,0);
   LCD_Write_String("Spainskills 2026");
+  */
+  //---------------------//
+
+  //---- OLED SSD1306 - I2C ---//
+  SSD1306_Init (); // initialise the display
+
+  SSD1306_Clear();
+
+  SSD1306_GotoXY (10,0); // goto 10, 0
+  SSD1306_Puts ("Spainskills !!", &Font_11x18, 1);
+
+  int num = 123456;
+  float flt = 3.5;
+
+  int entero = (int)flt;
+  int decimal = (int)((flt - entero) * 100);
+  if (decimal < 0) decimal = -decimal;
+
+  char bufnum[7];
+  char bufflt[7];
+
+  sprintf (bufnum, "%d", num);
+  sprintf(bufflt, "%d.%02d", entero, decimal); // No está habiliatado el float...
+
+  SSD1306_GotoXY (10, 20); // va a columna 10 fila 30
+  SSD1306_Puts (bufnum, &Font_7x10, 1); // print num
+
+  SSD1306_GotoXY (10, 30); // va a columna 10 fila 30
+  SSD1306_Puts (bufflt, &Font_16x26, 1); // print num
+  SSD1306_UpdateScreen(); // update screen
+
+  SSD1306_DrawBitmap(84, 30, pacman_32x32, 32, 32, 1);
+
+  SSD1306_UpdateScreen(); // update screen<p style="margin:0;"></p>  while (1) { }
+
+  SSD1306_ScrollLeft(1,64);
+
+  //---------------------//
 
   extern TIM_HandleTypeDef htim3;
   HC_SR04_Init(&htim3, TIM_CHANNEL_4);
