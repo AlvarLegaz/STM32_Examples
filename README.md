@@ -14,6 +14,11 @@ Controla la frecuencia del parpadeo de un led (PIN PB12) de dos formas:
 Controla display LCD mediante I2C
 https://naylampmechatronics.com/blog/35_tutorial-lcd-con-i2c-controla-un-lcd-con-solo-dos-pines.html
 
+## Pantalla OLED con controlador SSD1306 e I2C
+Importante configurar I2C en Fast Mode o no funciona...
+<img width="537" height="671" alt="image" src="https://github.com/user-attachments/assets/b9c2d4c6-6c46-4730-bb86-20571676db7c" />
+
+
 ## Test_F103_Hardware
 Prueba el hardware de la placa de control STM32F103 cuyo esquemático se encuentra adjunto en el repositorio.
 Este programa contiene:
