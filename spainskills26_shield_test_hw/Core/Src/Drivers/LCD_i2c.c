@@ -4,7 +4,7 @@ Verifique la hoja de datos para verificar la dirección correcta junto con el bi
 
 //NOTA: RECORDAR ACTIVAR LOS PINES SDA Y SCL CON PULL-UP, SE PUEDE HACER EN HAL_I2C_MspInit(hi2c) O CON CUBEMX
 
-#include "drivers/LCD_I2C.h"
+#include "Drivers/LCD_I2C.h"
 
 extern I2C_HandleTypeDef hi2c1;  // change your handler here accordingly
 #define SLAVE_ADDRESS_LCD 0x4e // change this according to ur setup
