@@ -25,10 +25,11 @@ Importante configurar I2C en Fast Mode o no funciona...
 https://controllerstech.com/oled-display-using-i2c-stm32/
 
 
-## Test_F103_Hardware
-Prueba el hardware de la placa de control STM32F103 cuyo esquemático se encuentra adjunto en el repositorio.
+## Spainskills_2026_Shield_Pruebas
+Prueba el hardware de la placa de control STM32L053 junto con Shield propuesto para Spainskills2026.
+
 Este programa contiene:
-5 Menús por los que nos podemos desplazar mediante una pulsación en un botón de servicio. La implementación de los menú se realiza mediante una máquina de estados muy simple.
+Menús por los que nos podemos desplazar mediante pulsaciones en los botones de servicio. La implementación de los menú se realiza mediante una máquina de estados muy simple.
 ### Menú 1 
 Muestra mensaje en display y realiza desplazamientos del texto de izquierda a derecha, si se habilita.
 Funciones implicadas: i2c y LCD_i2c.
