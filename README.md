@@ -27,23 +27,20 @@ Prueba el hardware de la placa de control STM32F103 cuyo esquemático se encuent
 Este programa contiene:
 5 Menús por los que nos podemos desplazar mediante una pulsación en un botón de servicio. La implementación de los menú se realiza mediante una máquina de estados muy simple.
 ### Menú 1 
-Muestra mensaje en display y realiza desplazamientos del texto de izquierda a derecha. 
+Muestra mensaje en display y realiza desplazamientos del texto de izquierda a derecha, si se habilita.
 Funciones implicadas: i2c y LCD_i2c.
 
 ### Menú 2 
-Hace parpadear los leds Link y Status de la placa, asociados a PB12 y PB13.
+Hace parpadear los leds del shield.
 Funciones implicadas: gpio, i2c y LCD_i2c
 
 ### Menú 3 
-Registra estado de entrada del conector I1 y muestra su estado por pantalla.
-Funciones implicadas: gpio, i2c y LCD_i2c
+Usa conversor ADC para leer valor potenciometro, LDR y sensor de temperatura.
 
 ### Menú 4 
-Le el valor analógico en las entradas de los conectores I2 e I3.
-Funciones implicadas: adc, i2c y LCD_i2c
+Hace sonar el buzzer. Al estar controlado con pnp usa logica negada.
 
 ### Menú 5 
-Asigna salida PWM a conector M0 y controla su ciclo de trabajo mediante el valor analógico de I
-Funciones implicadas: pwm, timer2, i2c y LCD_i2c
+Sin implementar, deberia haber sido ultrasonico que controla un servo en función de la distancia...
 
 
