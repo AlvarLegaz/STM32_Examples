@@ -15,6 +15,9 @@ Controla display LCD mediante I2C
 https://naylampmechatronics.com/blog/35_tutorial-lcd-con-i2c-controla-un-lcd-con-solo-dos-pines.html
 
 ## Pantalla OLED con controlador SSD1306 e I2C
+
+https://controllerstech.com/oled-display-using-i2c-stm32/
+
 Importante configurar I2C en Fast Mode o no funciona...
 
 <img width="537" height="671" alt="image" src="https://github.com/user-attachments/assets/b9c2d4c6-6c46-4730-bb86-20571676db7c" />
