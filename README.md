@@ -11,6 +11,7 @@ Controla la frecuencia del parpadeo de un led (PIN PB12) de dos formas:
 2.  Si PA6 está a bajo el parpadeo se controla por entrada analógica en PIN PA7 (Entrada analógica 7 del ADC1). El tiempo oscila entre un T_minimo y un T_maximo.
 
 ## Pulsadores entrada
+Para shield Spainskills 2026 debe establecerse pull-up interno y logica negada.
 <img width="900" height="513" alt="image" src="https://github.com/user-attachments/assets/e47d3523-e6be-4345-8c83-7c9cbb2d4ca1" />
 
 
