@@ -1,4 +1,4 @@
-# EJEMPLOS BÁSICOS STM32F
+# EJEMPLOS BÁSICOS STM32L/F
 
 ## Placas desarrollo STM32
 <img width="531" height="455" alt="image" src="https://github.com/user-attachments/assets/ece3ee35-3f99-48de-aa26-3943d3013089" />
