@@ -43,4 +43,7 @@ Hace sonar el buzzer. Al estar controlado con pnp usa logica negada.
 ### Menú 5 
 Sin implementar, deberia haber sido ultrasonico que controla un servo en función de la distancia...
 
+### Menú 6 
+Juego del laberinto.
+
 
