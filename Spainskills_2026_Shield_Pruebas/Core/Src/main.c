@@ -127,7 +127,7 @@ int main(void)
   LCD_Write_String(" Menu 3: ADC");
 
   LCD_Set_Cursor(3,0);
-  LCD_Write_String(" Menu 4: ????");
+  LCD_Write_String(" Menu 4: Buzzer");
 
   //---- OLED SSD1306 - I2C ---//
   SSD1306_Init (); // initialise the display
@@ -232,7 +232,7 @@ int main(void)
 	break;
 
 	 case menu_leds:
-		 HAL_Delay(500);
+		 HAL_Delay(250);
 		 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
 		 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, 0);
 		 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, SET);
@@ -240,7 +240,7 @@ int main(void)
 		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, 1);
 		 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, 1);
 
-		 HAL_Delay(500);
+		 HAL_Delay(250);
 		 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
 		 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, 1);
 		 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, RESET);
@@ -252,7 +252,9 @@ int main(void)
 	 break;
 
 	 case menu_adc:
-		 uint16_t valorPA0, valorPA1, valorPA4;
+		 uint16_t valorPA0 = 0;
+		 uint16_t valorPA1 = 0;
+		 uint16_t valorPA4 = 0;
 
 		 // --- Leer PA0 (Canal 0) ---
 		 Select_ADC_Channel(ADC_CHANNEL_0);
@@ -261,7 +263,7 @@ int main(void)
 		     valorPA0 = HAL_ADC_GetValue(&hadc);
 		 }
 		 HAL_ADC_Stop(&hadc);
-		 HAL_Delay(10); // Pequeña pausa para estabilizar
+		 HAL_Delay(20); // Pequeña pausa para estabilizar
 
 		 // --- Leer PA1 (Canal 1) ---
 		 Select_ADC_Channel(ADC_CHANNEL_1);
@@ -270,7 +272,7 @@ int main(void)
 		     valorPA1 = HAL_ADC_GetValue(&hadc);
 		 }
 		 HAL_ADC_Stop(&hadc);
-		 HAL_Delay(10); // Pequeña pausa para estabilizar
+		 HAL_Delay(20); // Pequeña pausa para estabilizar
 
 		 // --- Leer PA4 (Canal 4) ---
 		 Select_ADC_Channel(ADC_CHANNEL_4);
@@ -279,10 +281,9 @@ int main(void)
 		     valorPA4 = HAL_ADC_GetValue(&hadc);
 		 }
 		 HAL_ADC_Stop(&hadc);
-		 HAL_Delay(10); // Pequeña pausa para estabilizar
+		 HAL_Delay(20); // Pequeña pausa para estabilizar
 
 		 // Ahora puedes usar valorPA0, valorPA1 y valorPA4...
-		 HAL_Delay(500);
 		 char str_PA0[16];
 		 char str_PA1[16];
 		 char str_PA4[16];
@@ -295,7 +296,11 @@ int main(void)
 		 sprintf(str_PA0, "POT = %lu.%02lu V", mV/1000, (mV%1000)/10);
 
 		 sprintf (str_PA1, "LDR = %d", valorPA1);
-		 sprintf (str_PA4, "TEMP = %d", valorPA4);
+
+		 uint32_t mV_temp = (uint32_t)valorPA4 * 3300 / 4095;
+		 mV_temp = mV_temp - 200; //Corrección por tmp36
+		 uint32_t temperatura = mV_temp / 10.0;  // LM35 = 10mV por °C
+		 sprintf(str_PA4, "TEMP = %d C", temperatura);
 
 		 SSD1306_GotoXY (10,0); // goto 10, 0
 		 SSD1306_Puts ("ADC !!", &Font_11x18, 1);
@@ -320,7 +325,7 @@ int main(void)
 	 break;
 
 	 case menu_buzzer:
-		 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8,HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1));
+		 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8,HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10));
 	 break;
 
 	 default:
